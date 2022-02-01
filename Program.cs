@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
 using System.Reflection;
 using System.Text.Json;
 
@@ -37,9 +36,7 @@ class Weather
 class WeatherLogger
 {
     public static string apiKey = new ConfigurationBuilder().AddJsonFile("myconfig.json").Build()["secretKey"];
-
-
-   public static void Log(string city)
+    public static void Log(string city)
     {
         PropertyInfo propertyInfo = typeof(Weather).GetProperty(nameof(Weather.Temperature));
         UnitAttribute unitAttribute = (UnitAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(UnitAttribute));
