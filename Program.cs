@@ -1,7 +1,9 @@
-﻿using System.Reflection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
+using System.Reflection;
 using System.Text.Json;
 
-WeatherLogger.Log("Laogs,Nigeria");
+WeatherLogger.Log("Lagos,Nigeria");
 
 
 enum Units
@@ -31,21 +33,24 @@ class Weather
 
 }
 
+
 class WeatherLogger
 {
     public static string apiKey = "c59654e9053c4be586d212935223101";
+
+    public WeatherLogger()
+    {
+        var config = new ConfigurationBuilder().AddJsonFile("./myconfig.json").Build();
+        apiKey = config["secretKey"];
+    }
    public static void Log(string city)
     {
         PropertyInfo propertyInfo = typeof(Weather).GetProperty(nameof(Weather.Temperature));
-        UnitAttribute  unitAttribute = (UnitAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(UnitAttribute));
+        UnitAttribute unitAttribute = (UnitAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(UnitAttribute));
         unitAttribute ??= new UnitAttribute();
-        var client = new HttpClient();
-        HttpResponseMessage response = client.GetAsync($"https://api.weatherapi.com/v1/current.json?q={city}&key={apiKey}").Result;
-        var info = response.Content.ReadAsStringAsync().Result;
-        var country = JsonDocument.Parse(info).RootElement.GetProperty("location").GetProperty("country").ToString();
-        var region = JsonDocument.Parse(info).RootElement.GetProperty("location").GetProperty("region").ToString();
-        var tempC = Convert.ToDouble(JsonDocument.Parse(info).RootElement.GetProperty("current").GetProperty("temp_c").ToString());
-        var tempF = Convert.ToDouble(JsonDocument.Parse(info).RootElement.GetProperty("current").GetProperty("temp_f").ToString());
+        string country, region;
+        double tempC, tempF;
+        RequestData(city, out country, out region, out tempC, out tempF);
         var newWeather = JsonSerializer.Serialize<Weather>(new Weather()
         {
             region = region,
@@ -53,8 +58,18 @@ class WeatherLogger
             Temperature = unitAttribute.Unit == Units.Celsius ? tempC : tempF,
         });
         Console.WriteLine(newWeather);
-        
-     
+
+
     }
 
+    private static void RequestData(string city, out string country, out string region, out double tempC, out double tempF)
+    {
+        var client = new HttpClient();
+        HttpResponseMessage response = client.GetAsync($"https://api.weatherapi.com/v1/current.json?q={city}&key={apiKey}").Result;
+        var info = response.Content.ReadAsStringAsync().Result;
+        country = JsonDocument.Parse(info).RootElement.GetProperty("location").GetProperty("country").ToString();
+        region = JsonDocument.Parse(info).RootElement.GetProperty("location").GetProperty("region").ToString();
+        tempC = Convert.ToDouble(JsonDocument.Parse(info).RootElement.GetProperty("current").GetProperty("temp_c").ToString());
+        tempF = Convert.ToDouble(JsonDocument.Parse(info).RootElement.GetProperty("current").GetProperty("temp_f").ToString());
+    }
 }
