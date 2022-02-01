@@ -36,13 +36,9 @@ class Weather
 
 class WeatherLogger
 {
-    public static string apiKey = "c59654e9053c4be586d212935223101";
+    public static string apiKey = new ConfigurationBuilder().AddJsonFile("myconfig.json").Build()["secretKey"];
 
-    public WeatherLogger()
-    {
-        var config = new ConfigurationBuilder().AddJsonFile("./myconfig.json").Build();
-        apiKey = config["secretKey"];
-    }
+
    public static void Log(string city)
     {
         PropertyInfo propertyInfo = typeof(Weather).GetProperty(nameof(Weather.Temperature));
