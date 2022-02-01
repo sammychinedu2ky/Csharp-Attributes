@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Text.Json;
 
-WeatherLogger.Log("Laogs,Nigeria");
+WeatherLogger.Log("Lagos,Nigeria");
 
 
 enum Units
@@ -34,7 +34,7 @@ class Weather
 class WeatherLogger
 {
     public static string apiKey = "c59654e9053c4be586d212935223101";
-   public static void Log(string city)
+    public static void Log(string city)
     {
         PropertyInfo propertyInfo = typeof(Weather).GetProperty(nameof(Weather.Temperature));
         UnitAttribute  unitAttribute = (UnitAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(UnitAttribute));
