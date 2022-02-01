@@ -7,9 +7,6 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="myconfig.json" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="myconfig.json">
