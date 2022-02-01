@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Text.Json;
 
-WeatherLogger.Log("Aba,Nigeria");
+WeatherLogger.Log("Laogs,Nigeria");
 
 
 enum Units
