@@ -42,7 +42,8 @@ class WeatherLogger
     {
         //Trying to obtain the value Defined in the Unit Attribute  from the Temperature Property
         PropertyInfo propertyInfo = typeof(Weather).GetProperty(nameof(Weather.Temperature));
-        UnitAttribute  unitAttribute = (UnitAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(UnitAttribute));
+        UnitAttribute unitAttribute = (UnitAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(UnitAttribute));
+        //if the Unit Attribute isn't define, create a UnitAttribute object
         unitAttribute ??= new UnitAttribute();
         var client = new HttpClient();
         HttpResponseMessage response = client.GetAsync($"https://api.weatherapi.com/v1/current.json?q={city}&key={apiKey}").Result;
