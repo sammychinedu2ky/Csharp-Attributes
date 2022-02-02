@@ -24,7 +24,7 @@ class UnitAttribute : Attribute
     }
 }
 
-//Creating Weather Class
+//Create Weather Class
 class Weather
 {
     public string country { get; set; }
@@ -40,10 +40,10 @@ class WeatherLogger
     public static string apiKey = "c59654e9053c4be586d212935223101";
     public static void Log(string city)
     {
-        //Trying to obtain the value Defined in the Unit Attribute  from the Temperature Property
+        //Obtain the value Defined in the Unit Attribute  from the Temperature Property
         PropertyInfo propertyInfo = typeof(Weather).GetProperty(nameof(Weather.Temperature));
         UnitAttribute unitAttribute = (UnitAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(UnitAttribute));
-        //if the Unit Attribute isn't define, create a UnitAttribute object
+        //if the Unit Attribute isn't defined, create a UnitAttribute object
         unitAttribute ??= new UnitAttribute();
         var client = new HttpClient();
         HttpResponseMessage response = client.GetAsync($"https://api.weatherapi.com/v1/current.json?q={city}&key={apiKey}").Result;
@@ -57,7 +57,7 @@ class WeatherLogger
         {
             region = region,
             country = country,
-            //Deciding which temperature unit to display based on the set unitattribute value
+            //Decide which temperature unit to display based on the set unitattribute value
             Temperature = unitAttribute.Unit == Units.Celsius ? tempC : tempF,
         });
         Console.WriteLine(newWeather);
