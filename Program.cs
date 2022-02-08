@@ -4,7 +4,6 @@ using System.Text.Json;
 
 WeatherLogger.Log("Lagos,Nigeria");
 
-
 enum Units
 {
     Celsius,
@@ -35,16 +34,17 @@ class Weather
 
 class WeatherLogger
 {
-    public static string apiKey = new ConfigurationBuilder().AddJsonFile("myconfig.json").Build()["secretKey"];
+    public static string apiKey = new ConfigurationBuilder().AddSamFile().Build()["secretKey"];
     public static void Log(string city)
     {
         PropertyInfo propertyInfo = typeof(Weather).GetProperty(nameof(Weather.Temperature));
-        UnitAttribute unitAttribute = (UnitAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(UnitAttribute));
+        UnitAttribute unitAttribute = (UnitAttribute)propertyInfo.GetCustomAttribute(typeof(UnitAttribute));
+        //UnitAttribute unitAttribute = (UnitAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(UnitAttribute));
         unitAttribute ??= new UnitAttribute();
         string country, region;
         double tempC, tempF;
         RequestData(city, out country, out region, out tempC, out tempF);
-        var newWeather = JsonSerializer.Serialize<Weather>(new Weather()
+        var newWeather = JsonSerializer.Serialize(new Weather()
         {
             region = region,
             country = country,
@@ -64,5 +64,55 @@ class WeatherLogger
         region = JsonDocument.Parse(info).RootElement.GetProperty("location").GetProperty("region").ToString();
         tempC = Convert.ToDouble(JsonDocument.Parse(info).RootElement.GetProperty("current").GetProperty("temp_c").ToString());
         tempF = Convert.ToDouble(JsonDocument.Parse(info).RootElement.GetProperty("current").GetProperty("temp_f").ToString());
+    }
+}
+
+
+
+class MyProvider : ConfigurationProvider
+{
+    string FilePath;
+
+
+    public MyProvider(string Path)
+    {
+        FilePath = Path;
+    }
+
+
+    public override void Load()
+    {
+        var lines = File.ReadAllLines(FilePath);
+        foreach (var data in lines)
+        {
+            (string, string) val = (data.Split(' ').ToList()[0], data.Split(' ')[1]);
+            Set(val.Item1, val.Item2);
+        }
+    }
+
+
+
+
+}
+class MySource : IConfigurationSource
+{
+    string FilePath;
+    public MySource(string Path)
+    {
+        FilePath = Path;
+    }
+    public IConfigurationProvider Build(IConfigurationBuilder builder)
+    {
+
+        return new MyProvider(FilePath);
+    }
+
+}
+
+static class ExtensionClass
+{
+    public static IConfigurationBuilder AddSamFile(this IConfigurationBuilder builder)
+    {
+        return builder.Add(new MySource(@"C:\Users\Swacblooms\source\repos\AttributesCode\myconfig.sam"));
     }
 }

@@ -9,11 +9,15 @@
 
   <ItemGroup>
     <None Remove="myconfig.json" />
+    <None Remove="myconfig.sam" />
   </ItemGroup>
 
 
   <ItemGroup>
     <Content Include="myconfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="myconfig.sam">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
